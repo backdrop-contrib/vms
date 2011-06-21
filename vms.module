@@ -5,6 +5,10 @@
  * Render an administrative menu as a dropdown menu at the top of the window.
  */
 
+// Special responses to mlid queries.
+define('VMS_FRONT_PAGE', -1);
+define('VMS_MLID_MISSING', -2);
+
 /**
  * Advertise the current views api version.
  */
