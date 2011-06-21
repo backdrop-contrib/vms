@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ * Render an administrative menu as a dropdown menu at the top of the window.
+ */
+
+/**
+ * Advertise the current views api version.
+ */
+function vms_views_api() {
+  return array(
+    'api' => '3',
+  );
+}
