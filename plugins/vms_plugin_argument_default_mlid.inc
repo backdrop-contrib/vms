@@ -21,7 +21,7 @@ class vms_plugin_argument_default_mlid extends views_plugin_argument_default {
       '#title' => t('Menu item(s) to return'),
       '#default_value' => $this->options['trail'],
       '#options' => array(
-        'current_only' => t('Currently active mlid'),
+        'current' => t('Currently active mlid'),
         'trail' => t('Currently active mlid plus trail to top'),
         'exclude_current' => t('Trail to top menu link item, excluding the current mlid'),
       ),
