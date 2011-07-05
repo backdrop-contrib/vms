@@ -11,11 +11,23 @@ define('VMS_MLID_MISSING',  -2);
 define('VMS_BAD_CONFIG',    -3);
 
 /**
+ * Array describing different mlid queries.
+ */
+function vms_mlid_query_types() {
+  return array(
+    '***VMS_CURRENT***' => t('Currently active menu item'),
+    '***VMS_TRAIL***' => t('Current trail of menu items'),
+    '***VMS_EXCLUDE_CURRENT***' => t('Trail, excluding current page'),
+  );
+}
+
+/**
  * Advertise the current views api version.
  */
 function vms_views_api() {
   return array(
     'api' => '3',
+    'path' => drupal_get_path('module', 'vms'),
   );
 }
 
@@ -23,19 +35,20 @@ function vms_views_api() {
  * Helper function to get active menu item IDs in three different ways.
  *
  * @param <string> $trail
- *   Sets if the menu trail should be included or not. Three values are
- *   recognized:
- *     * 'current' returns the current mlid, period. The default behaviour.
- *     * 'trail' returns the trail of mlids to the top of the menu tree, ending
- *       with the front page. Is returned on the form 1+2+3 to work with Views.
- *     * 'exclude_current' works as the 'trail' option, but excludes the
- *       currently active mlid from the list.
+ *   Sets how the menu trail should be included (or not). The recognized values
+ *   are the same as those defined by vms_mlid_query_type():
+ *     * '***VMS_CURRENT***' returns the current mlid, period.
+ *     * '***VMS_TRAIL***' returns the trail of mlids to the top of the menu
+ *       tree, ending with the front page.
+ *     * '***VMS_EXCLUDE_CURRENT***' works as the '***VMS_TRAIL***' option, but
+ *       excludes the currently active mlid from the list.
  * @return <type>
- *   A single mlid or a trail of mlids on the form 1+2+3.
+ *   An array with the requested mlids.
  */
-function vms_get_current_mlid($trail = 'current') {
+function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
   // This function might be called a large number of times on a page request, so
-  // it makes sense to have a static cache.
+  // it makes sense to have a static cache. (This does not have to be cached per
+  // requested page, since it is built only once per page request.)
   static $response;
   if (isset($response[$trail])) {
     return $response[$trail];
@@ -45,11 +58,11 @@ function vms_get_current_mlid($trail = 'current') {
   // separately, to allow some smoother process below.
   if (drupal_is_front_page()) {
     if ($trail == 'exclude_current') {
-      $response[$trail] = VMS_MLID_MISSING;
+      $response[$trail] = array(VMS_MLID_MISSING);
       return $response[$trail];
     }
     else {
-      $response[$trail] = VMS_FRONT_PAGE;
+      $response[$trail] = array(VMS_FRONT_PAGE);
       return $response[$trail];
     }
   }
@@ -66,7 +79,7 @@ function vms_get_current_mlid($trail = 'current') {
     // If we don't have any active menu item, and we're NOT at the front page,
     // something is awry – we could for example be on a 404 page. Return -2 to
     // allow recognizing this special case.
-    $response[$trail] = VMS_MLID_MISSING;
+    $response[$trail] = array(VMS_MLID_MISSING);
     return $response[$trail];
   }
 
@@ -76,36 +89,36 @@ function vms_get_current_mlid($trail = 'current') {
 
   // Check the different configuration cases, and return mlids accordingly.
   switch ($trail) {
-    case 'current' : {
-      $response[$trail] = $current_menu_item['mlid'];
-      return $current_menu_item['mlid'];
+    case '***VMS_CURRENT***' : {
+      $response[$trail] = array($current_menu_item['mlid']);
+      return $response[$trail];
     }
 
-    case 'trail' : {
+    case '***VMS_TRAIL***' : {
       $mlids = array();
       foreach ($menu_trail as $menu_item) {
         $mlids[] = $menu_item['mlid'];
       }
       $mlids[] = $current_menu_item['mlid'];
 
-      $response[$trail] = implode('+', $mlids);
+      $response[$trail] = $mlids;
       return $response[$trail];
     }
 
-    case 'exclude_current' : {
+    case '***VMS_EXCLUDE_CURRENT***' : {
       $mlids = array();
       foreach ($menu_trail as $menu_item) {
         $mlids[] = $menu_item['mlid'];
       }
 
-      $response[$trail] = implode('+', $mlids);
+      $response[$trail] = $mlids;
       return $response[$trail];
     }
   }
 
   // If we got here, something is wrong. The $trail setting could for example
   // have an unrecognized value.
-  $response[$trail] = VMS_BAD_CONFIG;
+  $response[$trail] = array(VMS_BAD_CONFIG);
   return $response[$trail];
 }
 

@@ -6,3 +6,4 @@ dependencies[] = views
 files[] = vms.module
 files[] = vms.views.inc
 files[] = plugins/vms_plugin_argument_default_mlid.inc
+files[] = handlers/vms_handler_filter_mlid.inc
