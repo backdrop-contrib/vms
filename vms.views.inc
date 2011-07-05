@@ -19,17 +19,27 @@ function vms_views_plugins() {
 }
 
 function vms_views_data_alter(&$data) {
-  $data['field_data_field_test_mlid']['vms_test'] = array(
-    'group' => t('VMS'),
-    'title' => t('Experimental argument'),
-    'field' => 'field_test_mlid_value',
-    'filter' => array(
-      'field' => 'field_test_mlid_value',
-      'table' => 'field_data_field_test_mlid',
-      'help' => t('This is an experiment.'),
-      'handler'  => 'vms_handler_filter_mlid',
-    ),
-  );
+  // Get a list of all integer fields on the site – only these should be used
+  // for MLID filtering.
+  foreach (field_info_fields() as $field) {
+    if ($field['type'] == 'number_integer') {
+      // Get a quick alias for the field name, for readability
+      $field = &$field['field_name'];
+
+      $data['field_data_' . $field]['vms_' . $field] = array(
+        'group' => t('MLID filtering'),
+        'title' => t('@field', array('@field' => $field)),
+        'field' => $field . '_value',
+        'filter' => array(
+          'field' => $field . '_value',
+          'table' => 'field_data_' . $field,
+          'help' => t('A filter treating the field as a MLID value, matching it
+            against active menu link IDs.'),
+          'handler'  => 'vms_handler_filter_mlid',
+        ),
+      );
+    }
+  }
 }
 
 /**
