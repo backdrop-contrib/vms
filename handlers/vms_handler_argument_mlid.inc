@@ -40,4 +40,11 @@
 //      '#fieldset' => 'more',
 //    );
 //  }
+//  /**
+//   * Override for specific title lookups.
+//   */
+//  function title_query() {
+//    return $this->value;
+//  }
+//
 //}
