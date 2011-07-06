@@ -31,6 +31,43 @@ function vms_views_api() {
   );
 }
 
+// HOPEFULLY USEFUL CODE SNIPPETS START HERE.
+//
+//  $mlid = $menu_item;
+//
+//  // Retrieve menu item specified in the settings.
+//  $menu_item = menu_link_load($mlid);
+//  // Clone the original router item, but insert our menu_position path.
+//  $original_router_item = menu_get_item();
+//  $router_item = $original_router_item;
+//  $router_item['href'] = $menu_item['link_path'];
+//  $router_item['menu_name'] = $menu_item['menu_name'];
+//
+//  // Even if we are denied access to the page, we still want to show the
+//  // navigational paths to the page.
+//  $router_item['access'] = TRUE;
+//
+//  // Temporarily override the original router item.
+//  menu_set_item(NULL, $router_item);
+//
+//  // The magic goes here. Cred to JohnAlbin.
+//  menu_position_precache_tree($router_item, $original_router_item, $menu_item['menu_name']);
+//
+//  // Restore the original router item.
+//  menu_set_item(NULL, $original_router_item);
+//
+//
+//  $router_item_cid = 'links:' . $router_item['menu_name'] . ':page:' . $router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $router_item['access'] . ':' . (int) 0;
+//  $cache = cache_get($router_item_cid, 'cache_menu');
+//  $tree_cid = $cache->data;
+//
+//  // Copy the cache to the tree that contains the original router item.
+//  $original_router_item_cid = 'links:' . $router_item['menu_name'] . ':page:' . $original_router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $original_router_item['access'] . ':' . 0;
+//
+//  $active_trail = cache_get($original_router_item_cid, 'cache_menu')->data['active_trail'];
+//  dpm($active_trail);
+
+
 /**
  * Helper function to get active menu item IDs in three different ways.
  *

@@ -24,7 +24,6 @@ class vms_handler_filter_mlid extends views_handler_filter_equality {
       '#options' => vms_mlid_query_types(),
       '#default_value' => $this->value,
     );
-//    dpm($this);
   }
 
   /**
