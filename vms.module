@@ -31,42 +31,39 @@ function vms_views_api() {
   );
 }
 
-// HOPEFULLY USEFUL CODE SNIPPETS START HERE.
-//
-//  $mlid = $menu_item;
-//
-//  // Retrieve menu item specified in the settings.
-//  $menu_item = menu_link_load($mlid);
-//  // Clone the original router item, but insert our menu_position path.
-//  $original_router_item = menu_get_item();
-//  $router_item = $original_router_item;
-//  $router_item['href'] = $menu_item['link_path'];
-//  $router_item['menu_name'] = $menu_item['menu_name'];
-//
-//  // Even if we are denied access to the page, we still want to show the
-//  // navigational paths to the page.
-//  $router_item['access'] = TRUE;
-//
-//  // Temporarily override the original router item.
-//  menu_set_item(NULL, $router_item);
-//
-//  // The magic goes here. Cred to JohnAlbin.
-//  menu_position_precache_tree($router_item, $original_router_item, $menu_item['menu_name']);
-//
-//  // Restore the original router item.
-//  menu_set_item(NULL, $original_router_item);
-//
-//
-//  $router_item_cid = 'links:' . $router_item['menu_name'] . ':page:' . $router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $router_item['access'] . ':' . (int) 0;
-//  $cache = cache_get($router_item_cid, 'cache_menu');
-//  $tree_cid = $cache->data;
-//
-//  // Copy the cache to the tree that contains the original router item.
-//  $original_router_item_cid = 'links:' . $router_item['menu_name'] . ':page:' . $original_router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $original_router_item['access'] . ':' . 0;
-//
-//  $active_trail = cache_get($original_router_item_cid, 'cache_menu')->data['active_trail'];
-//  dpm($active_trail);
+/**
+ * Function for retrieving "fake" mlids from nodes. The fake mlids are set by
+ * Rules to activate a chosen menu item when a node of a type is being viewed.
+ *
+ */
+function _vms_get_current_fake_mlid() {
 
+  $mlid = drupal_static('rb_misc_mlid');
+
+  // Retrieve menu item specified in the settings.
+  $menu_item = menu_link_load($mlid);
+
+  // Clone the original router item, but insert our menu_position path.
+  $original_router_item = menu_get_item();
+  $router_item = $original_router_item;
+  $router_item['href'] = $menu_item['link_path'];
+  $router_item['menu_name'] = $menu_item['menu_name'];
+
+  // Even if we are denied access to the page, we still want to show the
+  // navigational paths to the page.
+  $router_item['access'] = TRUE;
+
+  $router_item_cid = 'links:' . $router_item['menu_name'] . ':page:' . $router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $router_item['access'] . ':' . (int) 0;
+  $cache = cache_get($router_item_cid, 'cache_menu');
+  $tree_cid = $cache->data;
+
+  // Copy the cache to the tree that contains the original router item.
+  $original_router_item_cid = 'links:' . $router_item['menu_name'] . ':page:' . $original_router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $original_router_item['access'] . ':' . 0;
+
+  $active_trail = cache_get($original_router_item_cid, 'cache_menu')->data['active_trail'];
+
+  return $active_trail;
+}
 
 /**
  * Helper function to get active menu item IDs in three different ways.
@@ -104,7 +101,8 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
     }
   }
 
-  // Get the current active menu link trail. Yes, the *set* function is also
+
+    // Get the current active menu link trail. Yes, the *set* function is also
   // used to get the active trail. It is called 'DX'.
   $menu_trail = menu_set_active_trail();
 
@@ -124,7 +122,29 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
   // page.
   $menu_trail[0]['mlid'] = VMS_FRONT_PAGE;
 
+  // Get the current active menu link trail. Yes, the *set* function is also
+  // used to get the active trail. It is called 'DX'.
+  // $menu_trail = menu_set_active_trail();
+
+  // Note that this operation *removes* an item from the array it works with,
+  // while also populating the new variable.
+  // $current_menu_item = array_pop(&$menu_trail);
+
+  // if (!isset($current_menu_item['mlid'])) {
+    // If we don't have any active menu item, and we're NOT at the front page,
+    // something is awry – we could for example be on a 404 page. Return -2 to
+    // allow recognizing this special case.
+  //  $response[$trail] = array(VMS_MLID_MISSING);
+  //  return $response[$trail];
+  // }
+
+  // Set a fake mlid for the top item in the trail, corresponding to the front
+  // page.
+    $menu_trail[0]['mlid'] = VMS_FRONT_PAGE;
+
   // Check the different configuration cases, and return mlids accordingly.
+
+
   switch ($trail) {
     case '***VMS_CURRENT***' : {
       $response[$trail] = array($current_menu_item['mlid']);
@@ -133,10 +153,18 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
 
     case '***VMS_TRAIL***' : {
       $mlids = array();
-      foreach ($menu_trail as $menu_item) {
-        $mlids[] = $menu_item['mlid'];
+      // If this is a node that has a fake mlid, use the fake mlid trail instead
+      //  of the drupal standard mlid trail.
+      if(drupal_static('rb_misc_mlid')) {
+        $mlids = _vms_get_current_fake_mlid();
+        $mlids[0] = VMS_FRONT_PAGE; // move - set first instead of resetting?
       }
-      $mlids[] = $current_menu_item['mlid'];
+      else {
+        foreach ($menu_trail as $menu_item) {
+          $mlids[] = $menu_item['mlid'];
+        }
+        $mlids[] = $current_menu_item['mlid'];
+      }
 
       $response[$trail] = $mlids;
       return $response[$trail];
@@ -144,10 +172,15 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
 
     case '***VMS_EXCLUDE_CURRENT***' : {
       $mlids = array();
-      foreach ($menu_trail as $menu_item) {
-        $mlids[] = $menu_item['mlid'];
+      if(drupal_static('rb_misc_mlid')) {
+        $mlids = _vms_get_current_fake_mlid();
+        $mlids[0] = VMS_FRONT_PAGE; // move - set first instead of resetting?
       }
-
+      else {
+        foreach ($menu_trail as $menu_item) {
+          $mlids[] = $menu_item['mlid'];
+        }
+      }
       $response[$trail] = $mlids;
       return $response[$trail];
     }
