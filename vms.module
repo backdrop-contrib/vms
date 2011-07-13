@@ -37,7 +37,7 @@ function vms_views_api() {
  *
  */
 function _vms_get_current_fake_mlid() {
-
+  
   $mlid = drupal_static('rb_misc_mlid');
 
   // Retrieve menu item specified in the settings.
