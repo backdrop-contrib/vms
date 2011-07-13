@@ -37,7 +37,7 @@ function vms_views_api() {
  *
  */
 function _vms_get_current_fake_mlid() {
-  
+
   $mlid = drupal_static('rb_misc_mlid');
 
   // Retrieve menu item specified in the settings.
@@ -91,7 +91,7 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
   // Front page is a special case, and doesn't have any mlid. This is handled
   // separately, to allow some smoother process below.
   if (drupal_is_front_page()) {
-    if ($trail == 'exclude_current') {
+    if ($trail == '***VMS_EXCLUDE_CURRENT***') {
       $response[$trail] = array(VMS_MLID_MISSING);
       return $response[$trail];
     }
@@ -155,7 +155,7 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
       $mlids = array();
       // If this is a node that has a fake mlid, use the fake mlid trail instead
       //  of the drupal standard mlid trail.
-      if(drupal_static('rb_misc_mlid')) {
+      if (drupal_static('rb_misc_mlid')) {
         $mlids = _vms_get_current_fake_mlid();
         $mlids[0] = VMS_FRONT_PAGE; // move - set first instead of resetting?
       }
@@ -165,20 +165,22 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
         }
         $mlids[] = $current_menu_item['mlid'];
       }
-
       $response[$trail] = $mlids;
       return $response[$trail];
     }
 
     case '***VMS_EXCLUDE_CURRENT***' : {
       $mlids = array();
-      if(drupal_static('rb_misc_mlid')) {
+      if (drupal_static('rb_misc_mlid')) {
         $mlids = _vms_get_current_fake_mlid();
-        $mlids[0] = VMS_FRONT_PAGE; // move - set first instead of resetting?
+        if (!drupal_is_front_page()) {
+          $mlids[0] = VMS_FRONT_PAGE; // move - set first instead of resetting?
+        }
       }
       else {
         foreach ($menu_trail as $menu_item) {
           $mlids[] = $menu_item['mlid'];
+
         }
       }
       $response[$trail] = $mlids;
@@ -189,6 +191,7 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
   // If we got here, something is wrong. The $trail setting could for example
   // have an unrecognized value.
   $response[$trail] = array(VMS_BAD_CONFIG);
+
   return $response[$trail];
 }
 

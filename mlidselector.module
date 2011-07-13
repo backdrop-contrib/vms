@@ -1,0 +1,76 @@
+<?php
+
+/**
+ *
+ * Implements hook_field_info_alter()
+ */
+function mlidselector_field_info_alter(&$info) {
+  // Change the default widget for fields of type 'foo'.
+  if (isset($info['number_integer'])) {
+    $info['number_integer']['mlid_widget'] = 'field_mlid_reference';
+  }
+}
+
+
+/**
+ * Implements hook_field_widget_info().
+ *
+ */
+function mlidselector_field_widget_info() {
+  return array(
+    'field_mlid_reference' => array(
+      'label' => t('Menu item reference'),
+      'field types' => array('number_integer'),
+    ),
+  );
+}
+
+
+
+/**
+ * Implements hook_field_widget_form().
+ *
+ * Three different forms are provided, for the three widget types.
+ *
+ * The 'field_example_colorpicker' and 'field_example_text' are essentially
+ * the same, but field_example_colorpicker adds a javascript colorpicker
+ * helper.
+ *
+ * field_example_3text displays three text fields, one each for red, green,
+ * and blue. However, the field type defines a single text column,
+ * rgb, which needs an HTML color spec. Define an element validate
+ * handler that converts our r, g, and b fields into a simulated single
+ * 'rgb' form element.
+ */
+function mlidselector_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+
+  $menus = menu_parent_options(menu_get_menus(), array('mlid' => 0));
+
+  $menu_list = array(
+      '' => t('No page selected'),
+      -1 => t('Front page'),
+  );
+  $c = -4;
+  foreach ($menus as $key => $name) {
+    $id = explode(':', $key);
+
+    if($id[1] == 0) {
+      $menu_list[$c] = $name;
+      $c--;
+    } else {
+      $menu_list[$id[1]] = $name;
+    }
+  }
+
+  $value = isset($items[$delta]['value']) ? $items[$delta]['value'] : '';
+
+  $element += array(
+    'value' => array(
+      '#type' => 'select',
+      '#options' => $menu_list,
+      '#default_value' => $value,
+      ),
+  );
+
+  return $element;
+}
