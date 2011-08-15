@@ -155,9 +155,9 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
       $mlids = array();
       // If this is a node that has a fake mlid, use the fake mlid trail instead
       //  of the drupal standard mlid trail.
-      if (drupal_static('rb_misc_mlid')) {
-        $mlids = _vms_get_current_fake_mlid();
-        $mlids[0] = VMS_FRONT_PAGE; // move - set first instead of resetting?
+      if (drupal_static('rb_misc_mlid_trail')) {
+        $mlids = drupal_static('rb_misc_mlid_trail');
+        $mlids[] = VMS_FRONT_PAGE;
       }
       else {
         foreach ($menu_trail as $menu_item) {
@@ -171,16 +171,17 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
 
     case '***VMS_EXCLUDE_CURRENT***' : {
       $mlids = array();
-      if (drupal_static('rb_misc_mlid')) {
-        $mlids = _vms_get_current_fake_mlid();
+      if (drupal_static('rb_misc_mlid_trail')) {
+        $mlids = drupal_static('rb_misc_mlid_trail');
+        // The front page should be added to the array, unless we're actually at
+        // the front page right now.
         if (!drupal_is_front_page()) {
-          $mlids[0] = VMS_FRONT_PAGE; // move - set first instead of resetting?
+          $mlids[] = VMS_FRONT_PAGE;
         }
       }
       else {
         foreach ($menu_trail as $menu_item) {
           $mlids[] = $menu_item['mlid'];
-
         }
       }
       $response[$trail] = $mlids;
