@@ -19,8 +19,8 @@ function mlidselector_field_widget_info() {
       'label' => t('Menu item reference'),
       'field types' => array('number_integer'),
       'settings' => array(
-          'menus' => array(),
-          'show_front' => FALSE,
+        'menus' => array(),
+        'show_front' => FALSE,
       ),
     ),
   );
@@ -47,8 +47,8 @@ function mlidselector_field_widget_form(&$form, &$form_state, $field, $instance,
 
   // Add special settings for this widget type.
   $menu_list = array(
-      '' => t('No page selected'),
-      -1 => t('Front page'),
+    '' => t('No page selected'),
+    -1 => t('Front page'),
   );
 
   $frontpage_path = variable_get('site_frontpage');
