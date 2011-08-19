@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Render an administrative menu as a dropdown menu at the top of the window.
+ * Main function for Views menu support, mainly reading the current menu trail.
  */
 
 // Special responses to mlid queries.
@@ -33,7 +33,7 @@ function vms_views_api() {
 /**
  * Helper function to get active menu item IDs in three different ways.
  *
- * @param <string> $trail
+ * @param $trail
  *   Sets how the menu trail should be included (or not). The recognized values
  *   are the same as those defined by vms_mlid_query_type():
  *     * '***VMS_CURRENT***' returns the current mlid, period.
@@ -41,14 +41,13 @@ function vms_views_api() {
  *       tree, ending with the front page.
  *     * '***VMS_EXCLUDE_CURRENT***' works as the '***VMS_TRAIL***' option, but
  *       excludes the currently active mlid from the list.
- * @return <type>
+ * @return
  *   An array with the requested mlids.
  */
 function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
   // This function might be called a large number of times on a page request, so
-  // it makes sense to have a static cache. (This does not have to be cached per
-  // requested page, since it is built only once per page request.) Also, using
-  // drupal_static allows other modules to modify the (seemingly) active trail.
+  // it makes sense to have a static cache. Using drupal_static allows other
+  // modules to modify the active trail, if need be.
   $vms_active_trail = &drupal_static('vms_active_trail', array());
 
   // Some bonus stuff to recognise fake menu items set by Rules Bonus Pack and
