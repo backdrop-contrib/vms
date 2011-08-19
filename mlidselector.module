@@ -1,14 +1,8 @@
 <?php
-
 /**
- * Implements hook_field_info_alter()
+ * @file
+ * Functions to provide a menu item reference widget for integer fields.
  */
-function mlidselector_field_info_alter(&$info) {
-  // Change the default widget for fields of type 'foo'.
-  if (isset($info['number_integer'])) {
-    $info['number_integer']['mlid_widget'] = 'field_mlid_reference';
-  }
-}
 
 /**
  * Implements hook_field_widget_info().
@@ -30,11 +24,9 @@ function mlidselector_field_widget_info() {
  * Implements hook_field_widget_form().
  */
 function mlidselector_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-
+  // Get a list of human-readable menu names for this field.
   $menus = &$instance['widget']['settings']['menus'];
   $menu_names = menu_get_menus();
-
-  // get a list of human-readable menu names for this field.
   $filtered_menus = array();
   foreach($menus as $key => $value) {
     if($value) {
@@ -43,7 +35,7 @@ function mlidselector_field_widget_form(&$form, &$form_state, $field, $instance,
   }
 
   // Get a raw list of all menu items for the relevant menus.
-  $menus = menu_parent_options($filtered_menus, array('mlid' => 0));
+  $items_raw = menu_parent_options($filtered_menus, array('mlid' => 0));
 
   // Add special settings for this widget type.
   $menu_list = array(
@@ -51,18 +43,20 @@ function mlidselector_field_widget_form(&$form, &$form_state, $field, $instance,
     -1 => t('Front page'),
   );
 
+  // Get some variables we need when building the MLID lists below.
   $frontpage_path = variable_get('site_frontpage');
   $menu_counter = -4;
 
   // Loop through the list of menu items and process them.
-  foreach ($menus as $key => $name) {
+  foreach ($items_raw as $key => $name) {
     $id = explode(':', $key);
 
-    // Remove links to front page unless the setting to include them is set
+    // Remove links to front page, unless the setting to include them is set.
     if (!$instance['widget']['settings']['show_front']) {
+      // Check for both direct linking and links to <front>. If this is a fron
+      // page link, just skip to the next item.
       $menu_item = menu_link_load($id[1]);
       $path = &$menu_item['link_path'];
-      // check for both direct linking and links to <front>
       if ($path == $frontpage_path || $path == '<front>') {
         continue;
       }
@@ -70,8 +64,9 @@ function mlidselector_field_widget_form(&$form, &$form_state, $field, $instance,
 
     // If menu item has no key (because it's a menu name, not a menu item, and
     // thus should not be available for choosing but still be visible in the
-    // select list for clarity), set a negative number as key, starting from
-    // -4 because previous numbers are used for special purposes
+    // select list for clarity), set a negative number as key. These start on
+    // -4, because previous numbers are used for special purposes.
+    // (blame @Itangalo)
     if($id[1] == 0) {
       $menu_list[$menu_counter] = $name;
       $menu_counter--;
@@ -80,7 +75,7 @@ function mlidselector_field_widget_form(&$form, &$form_state, $field, $instance,
     }
   }
 
-  // Get saved default value.
+  // Get saved default value, if any.
   $value = isset($items[$delta]['value']) ? $items[$delta]['value'] : '';
 
   $element += array(
@@ -88,7 +83,7 @@ function mlidselector_field_widget_form(&$form, &$form_state, $field, $instance,
       '#type' => 'select',
       '#options' => $menu_list,
       '#default_value' => $value,
-      ),
+    ),
   );
 
   return $element;
@@ -100,6 +95,8 @@ function mlidselector_field_widget_form(&$form, &$form_state, $field, $instance,
 function mlidselector_field_widget_settings_form($field, $instance) {
   $form = array();
 
+  // Create these variables by reference. No need to increase memory usage just
+  // because we want to write variables in a readable way.
   $widget = &$instance['widget'];
   $settings = &$widget['settings'];
 
@@ -113,7 +110,6 @@ function mlidselector_field_widget_settings_form($field, $instance) {
       '#weight' => -1,
       '#required' => TRUE,
     );
-
     $form['show_front'] = array(
       '#type' => 'checkbox',
       '#title' => t('Enable front page menu items'),
@@ -122,15 +118,17 @@ function mlidselector_field_widget_settings_form($field, $instance) {
       '#weight' => -1,
     );
   }
+
   return $form;
 }
 
 /**
  * Impements hook_form_FORM_ID_alter().
+ *
+ * This form alter is introduced to hide some of the normal settings on integer
+ * fields.
  */
 function mlidselector_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
-  // if we're using mlid reference widget, standard integer field settings
-  // should be hidden.
   if ($form['instance']['widget']['type']['#value'] == 'field_mlid_reference') {
     $form['instance']['settings']['min']['#access'] = FALSE;
     $form['instance']['settings']['max']['#access'] = FALSE;
