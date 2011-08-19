@@ -101,7 +101,7 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
   // response.
   foreach (vms_mlid_query_types() as $key => $name) {
     if (!count($vms_active_trail[$key])) {
-      $vms_active_trail[$key] = VMS_MLID_MISSING;
+      $vms_active_trail[$key] = array(VMS_MLID_MISSING);
     }
   }
 
