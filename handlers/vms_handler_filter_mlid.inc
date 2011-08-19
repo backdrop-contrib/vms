@@ -1,11 +1,16 @@
 <?php
+/**
+ * @file
+ * Filter handler for allowing restricting integer fields based on currently
+ * active menu items (plus trails).
+ */
 
 /**
  * Filter to compare a field against currently active menu link item.
  */
 class vms_handler_filter_mlid extends views_handler_filter_equality {
   /**
-   * Provide simple equality operator
+   * Provide simple equality operator.
    */
   function operator_options() {
     return array(
@@ -15,7 +20,7 @@ class vms_handler_filter_mlid extends views_handler_filter_equality {
   }
 
   /**
-   * Provide a select list to select (replacement) value
+   * Provide a select list to select (replacement) value.
    */
   function value_form(&$form, &$form_state) {
     $form['value'] = array(
@@ -27,7 +32,7 @@ class vms_handler_filter_mlid extends views_handler_filter_equality {
   }
 
   /**
-   * Display the filter on the administrative summary
+   * Display the filter on the administrative summary.
    */
   function admin_summary() {
     $options = vms_mlid_query_types();

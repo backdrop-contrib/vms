@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains the php code argument default plugin.
+ * Contains argument default plugin for getting current MLID items.
  */
 
 /**

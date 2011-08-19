@@ -1,7 +1,5 @@
-name = MLID Selector
-description = "Widget for integer fields"
-package = Views
+name = Menu item reference widget
+description = Widget for populating iteger fields with menu item IDs.
+package = Fields
 core = 7.x
-dependencies[] = views
-dependencies[] = vms
 files[] = mlid_selector.module
