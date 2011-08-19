@@ -28,8 +28,8 @@ function mlidselector_field_widget_form(&$form, &$form_state, $field, $instance,
   $menus = &$instance['widget']['settings']['menus'];
   $menu_names = menu_get_menus();
   $filtered_menus = array();
-  foreach($menus as $key => $value) {
-    if($value) {
+  foreach ($menus as $key => $value) {
+    if ($value) {
       $filtered_menus[$key] = $menu_names[$key];
     }
   }
@@ -67,10 +67,11 @@ function mlidselector_field_widget_form(&$form, &$form_state, $field, $instance,
     // select list for clarity), set a negative number as key. These start on
     // -4, because previous numbers are used for special purposes.
     // (blame @Itangalo)
-    if($id[1] == 0) {
+    if( $id[1] == 0) {
       $menu_list[$menu_counter] = $name;
       $menu_counter--;
-    } else {
+    }
+    else {
       $menu_list[$id[1]] = $name;
     }
   }
@@ -100,7 +101,7 @@ function mlidselector_field_widget_settings_form($field, $instance) {
   $widget = &$instance['widget'];
   $settings = &$widget['settings'];
 
-  if($widget['type'] == 'field_mlid_reference') {
+  if ($widget['type'] == 'field_mlid_reference') {
     $form['menus'] = array(
       '#type' => 'checkboxes',
       '#title' => t('Selectable menus'),

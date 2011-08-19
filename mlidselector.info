@@ -1,4 +1,4 @@
-name = Menu item reference widget
+name = Menu Item Reference Widget
 description = Widget for populating iteger fields with menu item IDs.
 package = Fields
 core = 7.x

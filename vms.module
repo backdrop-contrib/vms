@@ -60,7 +60,7 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
       $vms_active_trail['***VMS_TRAIL***'] =
         array_merge(array(VMS_FRONT_PAGE), drupal_static('rb_misc_mlid_trail'));
       $vms_active_trail['***VMS_EXCLUDE_CURRENT***'] = $vms_active_trail['***VMS_TRAIL***'];
-      $vms_active_trail['***VMS_CURRENT***'] = array_pop($vms_active_trail['***VMS_EXCLUDE_CURRENT***']);
+      $vms_active_trail['***VMS_CURRENT***'] = array(array_pop($vms_active_trail['***VMS_EXCLUDE_CURRENT***']));
     }
   }
 
@@ -94,7 +94,7 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
   $vms_active_trail['***VMS_EXCLUDE_CURRENT***'] = $vms_active_trail['***VMS_TRAIL***'];
   if (count($vms_active_trail['***VMS_EXCLUDE_CURRENT***'])) {
     $vms_active_trail['***VMS_CURRENT***'] =
-      array_pop($vms_active_trail['***VMS_EXCLUDE_CURRENT***']);
+      array(array_pop($vms_active_trail['***VMS_EXCLUDE_CURRENT***']));
   }
 
   // Get if any of the responses are empty, replace them with the appropriate
