@@ -54,7 +54,7 @@ function vms_views_query_alter($view, $query) {
 
   foreach ($query->where as &$condition_group) {
     foreach ($condition_group['conditions'] as &$condition) {
-      if (in_array($condition['value'], $replacements)) {
+      if (in_array($condition['value'], $replacements, TRUE)) {
         $condition['operator'] = ($condition['operator'] == '=') ? 'IN' : 'NOT IN';
         $condition['value'] = vms_get_current_mlid($condition['value']);
       }
