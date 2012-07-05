@@ -83,6 +83,7 @@ function mlidselector_field_widget_form(&$form, &$form_state, $field, $instance,
     'value' => array(
       '#type' => 'select',
       '#options' => $menu_list,
+      '#title' => $element['#title'],
       '#default_value' => $value,
     ),
   );
