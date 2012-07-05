@@ -18,12 +18,15 @@ function vms_views_plugins() {
   );
 }
 
+/**
+ * Implements hook_views_data_alter().
+ */
 function vms_views_data_alter(&$data) {
   // Get a list of all integer fields on the site – only these should be used
   // for MLID filtering.
   foreach (field_info_fields() as $field) {
     if ($field['type'] == 'number_integer') {
-      // Get a quick alias for the field name, for readability
+      // Get a quick alias for the field name, for readability.
       $field = &$field['field_name'];
 
       $data['field_data_' . $field]['vms_' . $field] = array(

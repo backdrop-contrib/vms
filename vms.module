@@ -5,9 +5,9 @@
  */
 
 // Special responses to mlid queries.
-define('VMS_FRONT_PAGE',    -1);
-define('VMS_MLID_MISSING',  -2);
-define('VMS_BAD_CONFIG',    -3);
+define('VMS_FRONT_PAGE', -1);
+define('VMS_MLID_MISSING', -2);
+define('VMS_BAD_CONFIG', -3);
 
 /**
  * Array describing different mlid queries.
@@ -33,7 +33,7 @@ function vms_views_api() {
 /**
  * Helper function to get active menu item IDs in three different ways.
  *
- * @param $trail
+ * @param string $trail
  *   Sets how the menu trail should be included (or not). The recognized values
  *   are the same as those defined by vms_mlid_query_type():
  *     * '***VMS_CURRENT***' returns the current mlid, period.
@@ -41,7 +41,8 @@ function vms_views_api() {
  *       tree, ending with the front page.
  *     * '***VMS_EXCLUDE_CURRENT***' works as the '***VMS_TRAIL***' option, but
  *       excludes the currently active mlid from the list.
- * @return
+ *
+ * @return array
  *   An array with the requested mlids.
  */
 function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
@@ -57,8 +58,8 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
     // If RB has set any faked active menu items, retrieve them and make the
     // processing necessary to get the response expected by Views Menu Support.
     if (is_array(drupal_static('rb_misc_mlid_trail'))) {
-      $vms_active_trail['***VMS_TRAIL***'] =
-        array_merge(array(VMS_FRONT_PAGE), drupal_static('rb_misc_mlid_trail'));
+      $vms_active_trail['***VMS_TRAIL***']
+        = array_merge(array(VMS_FRONT_PAGE), drupal_static('rb_misc_mlid_trail'));
       $vms_active_trail['***VMS_EXCLUDE_CURRENT***'] = $vms_active_trail['***VMS_TRAIL***'];
       $vms_active_trail['***VMS_CURRENT***'] = array(array_pop($vms_active_trail['***VMS_EXCLUDE_CURRENT***']));
     }
@@ -81,7 +82,7 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
   // Get the current active menu link trail. Yes, the *set* function is also
   // used to get the active trail. The phenomenon is called 'DX'.
   $menu_trail = menu_set_active_trail();
-  foreach ($menu_trail AS &$menu_item) {
+  foreach ($menu_trail as &$menu_item) {
     if (isset($menu_item['mlid'])) {
       $vms_active_trail['***VMS_TRAIL***'][] = $menu_item['mlid'];
     }
@@ -93,8 +94,8 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
   // in the CURRENT response.
   $vms_active_trail['***VMS_EXCLUDE_CURRENT***'] = $vms_active_trail['***VMS_TRAIL***'];
   if (count($vms_active_trail['***VMS_EXCLUDE_CURRENT***'])) {
-    $vms_active_trail['***VMS_CURRENT***'] =
-      array(array_pop($vms_active_trail['***VMS_EXCLUDE_CURRENT***']));
+    $vms_active_trail['***VMS_CURRENT***']
+      = array(array_pop($vms_active_trail['***VMS_EXCLUDE_CURRENT***']));
   }
 
   // Get if any of the responses are empty, replace them with the appropriate

@@ -67,7 +67,7 @@ function mlidselector_field_widget_form(&$form, &$form_state, $field, $instance,
     // select list for clarity), set a negative number as key. These start on
     // -4, because previous numbers are used for special purposes.
     // (blame @Itangalo)
-    if( $id[1] == 0) {
+    if ($id[1] == 0) {
       $menu_list[$menu_counter] = $name;
       $menu_counter--;
     }
