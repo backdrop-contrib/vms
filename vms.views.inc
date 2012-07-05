@@ -52,11 +52,13 @@ function vms_views_query_alter($view, $query) {
   // Get the patterns we want to replace.
   $replacements = array_keys(vms_mlid_query_types());
 
-  foreach ($query->where as &$condition_group) {
-    foreach ($condition_group['conditions'] as &$condition) {
-      if (in_array($condition['value'], $replacements, TRUE)) {
-        $condition['operator'] = ($condition['operator'] == '=') ? 'IN' : 'NOT IN';
-        $condition['value'] = vms_get_current_mlid($condition['value']);
+  if (isset($view->filter['vms_field_promo_mlid_direct']) || isset($view->filter['vms_field_promo_mlid_sub'])) {
+    foreach ($query->where as &$condition_group) {
+      foreach ($condition_group['conditions'] as &$condition) {
+        if (in_array($condition['value'], $replacements, TRUE)) {
+          $condition['operator'] = ($condition['operator'] == '=') ? 'IN' : 'NOT IN';
+          $condition['value'] = vms_get_current_mlid($condition['value']);
+        }
       }
     }
   }
