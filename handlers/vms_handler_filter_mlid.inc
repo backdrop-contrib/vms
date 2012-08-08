@@ -46,4 +46,34 @@ class vms_handler_filter_mlid extends views_handler_filter_equality {
   function can_expose() {
     return FALSE;
   }
+
+  /**
+   * Add the filtering to the query.
+   *
+   * Potentially redundant if the parent class could be replaced with an IN
+   * handler.
+   */
+  public function query() {
+    $this->ensure_my_table();
+
+    $vms_target = vms_get_current_mlid($this->options['value']);
+    $table = $this->table_alias . '.' . $this->real_field;
+
+    if ($this->operator == '=') {
+      $this->query->add_where(
+        $this->options['group'],
+        $table,
+        $vms_target,
+        'IN'
+      );
+    }
+    else {
+      $this->query->add_where(
+        $this->options['group'],
+        db_or()
+          ->condition($table, $vms_target, 'NOT IN')
+          ->condition($table, $vms_target, 'IS NULL')
+      );
+    }
+  }
 }
