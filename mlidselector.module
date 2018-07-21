@@ -44,22 +44,27 @@ function mlidselector_field_widget_form(&$form, &$form_state, $field, $instance,
   );
 
   // Get some variables we need when building the MLID lists below.
-  $frontpage_path = variable_get('site_frontpage');
+  $frontpage_path = config_get('system.core', 'site_frontpage');
   $menu_counter = -4;
 
   // Loop through the list of menu items and process them.
   foreach ($items_raw as $key => $name) {
     $id = explode(':', $key);
+    $menu_item = menu_link_load($id[1]);
 
     // Remove links to front page, unless the setting to include them is set.
     if (!$instance['widget']['settings']['show_front']) {
       // Check for both direct linking and links to <front>. If this is a fron
       // page link, just skip to the next item.
-      $menu_item = menu_link_load($id[1]);
       $path = &$menu_item['link_path'];
       if ($path == $frontpage_path || $path == '<front>') {
         continue;
       }
+    }
+
+    // Remove hidden menu items by skipping over them.
+    if (!empty($menu_item['hidden'])) {
+      continue;
     }
 
     // If menu item has no key (because it's a menu name, not a menu item, and
@@ -138,3 +143,43 @@ function mlidselector_form_field_ui_field_edit_form_alter(&$form, &$form_state) 
     $form['instance']['settings']['suffix']['#access'] = FALSE;
   }
 }
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function mlidselector_field_formatter_info() {
+  return array(
+    'mlidselector_menu_item_name' => array(
+      'label' => t('Menu item name'),
+      'field types' => array('number_integer'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function mlidselector_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+
+  if ($display['type'] == 'mlidselector_menu_item_name') {
+    foreach ($items as $delta => $item) {
+      if ($item['value'] == -1) {
+        // Display 'Front page'
+        $element[$delta] = array(
+          '#markup' => t('Front page'),
+        );
+      }
+      else {
+        // Display menu link title
+        $menu_link = menu_link_load($item['value']);
+        $element[$delta] = array(
+          '#markup' => $menu_link['link_title'],
+        );
+      }
+    }
+  }
+
+  return $element;
+}
+

@@ -26,7 +26,17 @@ function vms_mlid_query_types() {
 function vms_views_api() {
   return array(
     'api' => '3',
-    'path' => drupal_get_path('module', 'vms'),
+    'path' => backdrop_get_path('module', 'vms'),
+  );
+}
+
+/**
+ * Implements hook_autoload_info().
+ */
+function vms_autoload_info() {
+  return array(
+    'vms_plugin_argument_default_mlid' => 'plugins/vms_plugin_argument_default_mlid.inc',
+    'vms_handler_filter_mlid' => 'handlers/vms_handler_filter_mlid.inc',
   );
 }
 
@@ -49,7 +59,7 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
   // This function might be called a large number of times on a page request, so
   // it makes sense to have a static cache. Using drupal_static allows other
   // modules to modify the active trail, if need be.
-  $vms_active_trail = &drupal_static('vms_active_trail', array());
+  $vms_active_trail = &backdrop_static('vms_active_trail', array());
 
   // Some bonus stuff to recognise fake menu items set by Rules Bonus Pack and
   // Menu Position in combination.
@@ -57,9 +67,9 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
   if (module_exists('rb_misc')) {
     // If RB has set any faked active menu items, retrieve them and make the
     // processing necessary to get the response expected by Views Menu Support.
-    if (is_array(drupal_static('rb_misc_mlid_trail'))) {
+    if (is_array(backdrop_static('rb_misc_mlid_trail'))) {
       $vms_active_trail['***VMS_TRAIL***']
-        = array_merge(array(VMS_FRONT_PAGE), drupal_static('rb_misc_mlid_trail'));
+        = array_merge(array(VMS_FRONT_PAGE), backdrop_static('rb_misc_mlid_trail'));
       $vms_active_trail['***VMS_EXCLUDE_CURRENT***'] = $vms_active_trail['***VMS_TRAIL***'];
       $vms_active_trail['***VMS_CURRENT***'] = array(array_pop($vms_active_trail['***VMS_EXCLUDE_CURRENT***']));
     }
@@ -109,3 +119,4 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
   // Return the required trail type.
   return $vms_active_trail[$trail];
 }
+

@@ -1,5 +1,5 @@
 name = Menu Item Reference Widget
-description = Widget for populating iteger fields with menu item IDs.
+description = Widget for populating integer fields with menu item IDs.
 package = Fields
-core = 7.x
-files[] = mlid_selector.module
+backdrop = 1.x
+

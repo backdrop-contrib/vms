@@ -77,3 +77,4 @@ class vms_handler_filter_mlid extends views_handler_filter_equality {
     }
   }
 }
+

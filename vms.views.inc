@@ -44,3 +44,4 @@ function vms_views_data_alter(&$data) {
     }
   }
 }
+

@@ -29,3 +29,4 @@ class vms_plugin_argument_default_mlid extends views_plugin_argument_default {
     return $this->options['trail'];
   }
 }
+
