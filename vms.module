@@ -89,16 +89,16 @@ function vms_get_current_mlid($trail = '***VMS_CURRENT***') {
   // Insert the front page at the top of the menu trail.
   $vms_active_trail['***VMS_TRAIL***'] = array(VMS_FRONT_PAGE);
 
-  // Get the current active menu link trail. Yes, the *set* function is also
-  // used to get the active trail. The phenomenon is called 'DX'.
-  $menu_trail = menu_set_active_trail();
-  foreach ($menu_trail as &$menu_item) {
-    if (isset($menu_item['mlid'])) {
-      $vms_active_trail['***VMS_TRAIL***'][] = $menu_item['mlid'];
+  // Get the current active menu link trail.
+  $path_alias = backdrop_get_path_alias();
+  $ancestors = menu_get_ancestors(explode('/', $path_alias));
+  foreach ($ancestors as $ancestor) {
+    $menu_link = menu_link_get_preferred(backdrop_get_normal_path($ancestor));
+    if (isset($menu_link['mlid'])) {
+      $vms_active_trail['***VMS_TRAIL***'][] = $menu_link['mlid'];
     }
   }
-  // Remove the final $menu_item variable, left by the foreach-by-reference.
-  unset($menu_item);
+  $vms_active_trail['***VMS_TRAIL***'] = array_unique($vms_active_trail['***VMS_TRAIL***']);
 
   // Knock off the current mlid from the EXCLUDE_CURRENT response, and store it
   // in the CURRENT response.
