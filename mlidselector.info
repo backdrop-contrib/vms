@@ -2,4 +2,5 @@ name = Menu Item Reference Widget
 description = Widget for populating integer fields with menu item IDs.
 package = Fields
 backdrop = 1.x
+type = module
 
