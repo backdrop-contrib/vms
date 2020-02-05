@@ -12,7 +12,7 @@ integer fields with menu item IDs, picked from a select list.
 Together, these modules allow you to reference menu items where content should
 be visible, then display that specific content on those specific menu
 items/pages using Views. For examples, check out the
-[VMS Wiki](https://github.com/backdrop-contrib/vms/wiki).
+[VMS Wiki](https://github.com/backdrop-contrib/vms/wiki/Example-setup).
 
 Installation
 ------------
