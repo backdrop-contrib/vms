@@ -35,12 +35,13 @@ https://github.com/backdrop-contrib/vms/issues.
 Current Maintainers
 -------------------
 
-- Peter Anderson (https://github.com/BWPanda).
+- Seeking maintainer(s)
 
 Credits
 -------
 
-- Originally written for Drupal by Johan Falk (https://github.com/Itangalo).
+- Ported to Backdrop CMS by [Peter Anderson](https://github.com/BWPanda).
+- Originally written for Drupal by [Johan Falk](https://github.com/Itangalo).
 
 License
 -------
